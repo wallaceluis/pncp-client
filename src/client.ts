@@ -41,7 +41,7 @@ export interface FiltrosContratacao {
   /** Sistema de origem que publicou no PNCP. */
   idUsuario?: number;
   pagina?: number;
-  /** Máximo 50 (a API devolve 400 acima disso). Padrão: 50. */
+  /** Entre 10 e 50 (a API devolve 400 fora disso). Padrão: 50. */
   tamanhoPagina?: number;
 }
 
@@ -67,7 +67,7 @@ export interface AtasParams {
   codigoUnidadeAdministrativa?: string;
   idUsuario?: number;
   pagina?: number;
-  /** Máximo 500. Padrão: 500. */
+  /** Entre 10 e 500. Padrão: 500. */
   tamanhoPagina?: number;
 }
 
@@ -84,6 +84,8 @@ export interface IterarOptions extends RequestOptions {
 
 const MAX_CONTRATACOES = 50;
 const MAX_ATAS = 500;
+/** As consultas paginadas da API de consulta recusam páginas com menos de 10 registros. */
+const MIN_PAGINA = 10;
 
 const BRT_OFFSET_MS = 3 * 60 * 60 * 1000;
 
@@ -101,9 +103,9 @@ export function formatarData(d: DataParam): string {
   return `${m[1]}${m[2]}${m[3]}`;
 }
 
-function tamanho(valor: number | undefined, padrao: number, max: number): number {
+function tamanho(valor: number | undefined, padrao: number, max: number, min = 1): number {
   const t = valor ?? padrao;
-  if (!Number.isInteger(t) || t < 1 || t > max) throw new RangeError(`tamanhoPagina deve ser um inteiro entre 1 e ${max} (recebido: ${t})`);
+  if (!Number.isInteger(t) || t < min || t > max) throw new RangeError(`tamanhoPagina deve ser um inteiro entre ${min} e ${max} (recebido: ${t})`);
   return t;
 }
 
@@ -208,7 +210,7 @@ export class PncpClient {
       codigoModalidadeContratacao: params.modalidade,
       ...this.#filtros(params),
       pagina: p,
-      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_CONTRATACOES, MAX_CONTRATACOES),
+      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_CONTRATACOES, MAX_CONTRATACOES, MIN_PAGINA),
     });
     return toPagina(await this.get(`${this.#consulta}/v1/contratacoes/proposta?${q}`, opts), p, parseContratacao);
   }
@@ -251,7 +253,7 @@ export class PncpClient {
       codigoModoDisputa: params.codigoModoDisputa,
       ...this.#filtros(params),
       pagina: p,
-      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_CONTRATACOES, MAX_CONTRATACOES),
+      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_CONTRATACOES, MAX_CONTRATACOES, MIN_PAGINA),
     });
     return toPagina(await this.get(`${this.#consulta}/v1/contratacoes/${tipo}?${q}`, opts), p, parseContratacao);
   }
@@ -375,7 +377,7 @@ export class PncpClient {
       codigoUnidadeAdministrativa: params.codigoUnidadeAdministrativa,
       idUsuario: params.idUsuario,
       pagina: p,
-      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_ATAS, MAX_ATAS),
+      tamanhoPagina: tamanho(params.tamanhoPagina, MAX_ATAS, MAX_ATAS, MIN_PAGINA),
     });
     return toPagina(await this.get(`${this.#consulta}/v1/${path}?${q}`, opts), p, parseAta);
   }

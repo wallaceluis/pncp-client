@@ -1,6 +1,6 @@
 {
   "name": "pncp-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cliente TypeScript para a API pública do PNCP (Portal Nacional de Contratações Públicas): licitações, itens, resultados, atas e arquivos, com retry, timeout e paginação.",
   "keywords": [
     "pncp",

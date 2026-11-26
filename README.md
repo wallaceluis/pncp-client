@@ -79,7 +79,7 @@ Filtros das contratações: `uf`, `codigoMunicipioIbge`, `cnpj`, `codigoUnidadeA
 
 **Datas** podem ser `Date`, `"AAAA-MM-DD"` ou `"AAAAMMDD"`. Um `Date` é lido no horário de Brasília. As datas devolvidas (`dataAbertura`, `dataEncerramento` etc.) vêm em ISO 8601 UTC, já convertidas do horário de Brasília que a API usa.
 
-**Tamanho de página**: nas contratações o máximo é 50 (a API responde 400 acima disso) e nas atas, 500. O cliente valida antes de chamar a API e lança `RangeError`.
+**Tamanho de página**: o mínimo é 10 e o máximo é 50 nas contratações e 500 nas atas (a API responde 400 fora disso). O cliente valida antes de chamar a API e lança `RangeError`.
 
 ### Itens e resultados
 

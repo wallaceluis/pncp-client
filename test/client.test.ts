@@ -27,6 +27,8 @@ describe("propostasAbertas", () => {
   it("recusa tamanhoPagina acima de 50 sem chamar a API", async () => {
     const f = mockFetch(() => json({}));
     await expect(client(f).propostasAbertas({ dataFinal: "2026-12-31", tamanhoPagina: 100 })).rejects.toBeInstanceOf(RangeError);
+    await expect(client(f).propostasAbertas({ dataFinal: "2026-12-31", tamanhoPagina: 9 })).rejects.toBeInstanceOf(RangeError);
+    await expect(client(f).atas({ dataInicial: "2026-12-01", dataFinal: "2026-12-31", tamanhoPagina: 5 })).rejects.toBeInstanceOf(RangeError);
     await expect(client(f).propostasAbertas({ dataFinal: "31/12/2026" })).rejects.toBeInstanceOf(RangeError);
     expect(f).not.toHaveBeenCalled();
   });
